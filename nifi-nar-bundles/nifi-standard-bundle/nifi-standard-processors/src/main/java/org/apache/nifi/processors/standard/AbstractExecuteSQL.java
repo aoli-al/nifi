@@ -377,7 +377,7 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
                                 } catch (Exception e) {
                                     // Remove any result set flow file(s) and propagate the exception
                                     session.remove(resultSetFF);
-                                    session.remove(resultSetFlowFiles);
+//                                    session.remove(resultSetFlowFiles);
                                     if (e instanceof ProcessException) {
                                         throw (ProcessException) e;
                                     } else {

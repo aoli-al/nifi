@@ -98,6 +98,13 @@ public class TestExecuteSQLRecord {
             + " where PER.ID < ? AND REL.ID < ?";
 
 
+    public static void main(String args[]) throws InitializationException, SQLException {
+        setupClass();
+        TestExecuteSQLRecord test = new TestExecuteSQLRecord();
+        test.setup();
+        test.testWithOutputBatchingLastBatchFails();
+    }
+
     @BeforeAll
     public static void setupClass() {
         System.setProperty("derby.stream.error.file", "target/derby.log");

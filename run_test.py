@@ -19,6 +19,7 @@ def main():
 
 @main.command(name="build")
 def build():
+    subprocess.call('jenv local 11', shell=True)
     subprocess.call(["mvn", "install", "-DskipTests"], cwd=DIR)
 
 

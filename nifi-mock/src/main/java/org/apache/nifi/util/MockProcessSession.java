@@ -59,6 +59,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -299,10 +301,21 @@ public class MockProcessSession implements ProcessSession {
         provenanceReporter.clear();
         counterMap.clear();
     }
+    Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void commitAsync() {
-        commitInternal();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10 * 1000);
+                    commitInternal();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     @Override

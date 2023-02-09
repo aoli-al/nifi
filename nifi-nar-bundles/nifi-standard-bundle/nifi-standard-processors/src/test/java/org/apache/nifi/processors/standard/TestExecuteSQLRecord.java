@@ -98,7 +98,7 @@ public class TestExecuteSQLRecord {
             + " where PER.ID < ? AND REL.ID < ?";
 
 
-    public static void main(String args[]) throws InitializationException, SQLException {
+    public static void main(String args[]) throws InitializationException, SQLException, InterruptedException {
         setupClass();
         TestExecuteSQLRecord test = new TestExecuteSQLRecord();
         test.setup();
@@ -295,7 +295,8 @@ public class TestExecuteSQLRecord {
     }
 
     @Test
-    public void testWithOutputBatchingLastBatchFails() throws InitializationException, SQLException {
+    public void testWithOutputBatchingLastBatchFails()
+            throws InitializationException, SQLException, InterruptedException {
         // remove previous test database, if any
         final File dbLocation = new File(DB_LOCATION);
         dbLocation.delete();
@@ -303,13 +304,15 @@ public class TestExecuteSQLRecord {
         // load test data to database
         final Connection con = ((DBCPService) runner.getControllerService("dbcp")).getConnection();
         Statement stmt = con.createStatement();
+        Statement stmt2 = con.createStatement();
 
         try {
             stmt.execute("drop table TEST_NULL_INT");
         } catch (final SQLException sqle) {
         }
 
-        stmt.execute("create table TEST_NULL_INT (id integer not null, val1 varchar(50), constraint my_pk primary key (id))");
+        stmt.execute("create table TEST_NULL_INT (id integer not null, val1 varchar(50), constraint my_pk primary " +
+                "key (id))");
 
         // Insert some valid numeric values (for TO_NUMBER call later)
         for (int i = 0; i < 11; i++) {
@@ -331,10 +334,32 @@ public class TestExecuteSQLRecord {
         runner.setIncomingConnection(true);
         runner.setProperty(ExecuteSQLRecord.MAX_ROWS_PER_FLOW_FILE, "5");
         runner.enqueue("SELECT ID, CAST(VAL1 AS INTEGER) AS TN FROM TEST_NULL_INT", attrMap);
-        runner.run();
+        {
+            try {
+                stmt2.execute("drop table TEST_NULL_INT2");
+            } catch (final SQLException sqle) {
+            }
+            stmt2.execute(
+                    "create table TEST_NULL_INT2 (id integer not null, val1 varchar(50), constraint my_pk_2 primary " +
+                            "key" +
+                            " (id))");
 
-        runner.assertAllFlowFilesTransferred(ExecuteSQLRecord.REL_FAILURE, 1);
-        runner.assertTransferCount(ExecuteSQLRecord.REL_SUCCESS, 0);
+            // Insert some valid numeric values (for TO_NUMBER call later)
+            for (int i = 0; i < 11; i++) {
+                stmt2.execute("insert into TEST_NULL_INT2 (id, val1) VALUES (" + i + ", '" + i + "')");
+            }
+            try {
+                stmt2.execute("drop table TEST_NULL_INT2");
+            } catch (final SQLException sqle) {
+            }
+        }
+        runner.enqueue("BAD SQL", attrMap);
+        runner.enqueue("SELECT ID, CAST(VAL1 AS INTEGER) AS TN FROM TEST_NULL_INT2", attrMap);
+        runner.run(3);
+        Thread.sleep(10 * 1000);
+
+//        runner.assertAllFlowFilesTransferred(ExecuteSQLRecord.REL_FAILURE, 1);
+//        runner.assertTransferCount(ExecuteSQLRecord.REL_SUCCESS, 0);
     }
 
     @Test

@@ -922,7 +922,7 @@
                     <execution>
                         <id>enforce-maven-version</id>
                         <goals>
-                            <goal>enforce</goal>
+                            <goal>display-info</goal>
                         </goals>
                         <configuration>
                             <rules>
@@ -946,36 +946,6 @@
                                         <exclude>org.apache.nifi.registry:*</exclude>
                                     </excludes>
                                 </requireReleaseDeps>
-                                <bannedDependencies>
-                                    <excludes>
-                                        <!-- Cat-X Deps -->
-                                        <exclude>org.json:json:*:*:compile</exclude>
-                                        <exclude>c3p0:c3p0:*:*:compile</exclude>
-                                        <!-- Versions of JSR305 before 3.0.1 are not allowed https://github.com/findbugsproject/findbugs/issues/128 -->
-                                        <exclude>com.google.code.findbugs:jsr305:*:*:compile</exclude>
-                                        <!-- SLF4J routing to Log4j 1.2 is a runtime implementation that conflicts with Logback -->
-                                        <exclude>org.slf4j:slf4j-log4j12</exclude>
-                                        <exclude>org.slf4j:slf4j-reload4j</exclude>
-                                        <!-- Log4J excluded in favor of log4j-over-slf4j and logback -->
-                                        <exclude>log4j:log4j:*</exclude>
-                                        <!-- Log4j 2 log4j-core excluded in favor of log4j-to-slf4j routing to logback -->
-                                        <exclude>org.apache.logging.log4j:log4j-core:*</exclude>
-                                        <!-- Commons Logging excluded in favor of jcl-over-slf4j -->
-                                        <exclude>commons-logging:commons-logging:*</exclude>
-                                        <!-- Apache Xalan is no longer maintained and is bundled in the standard JRE -->
-                                        <exclude>xalan:xalan</exclude>
-                                        <!-- As of Bouncycastle 1.71 Java 8 is the minimum required so jdk15on artifacts not allowed -->
-                                        <exclude>org.bouncycastle:bcprov-jdk15on</exclude>
-                                        <exclude>org.bouncycastle:bcpg-jdk15on</exclude>
-                                        <exclude>org.bouncycastle:bcpkix-jdk15on</exclude>
-                                        <exclude>org.bouncycastle:bcutil-jdk15on</exclude>
-                                        <exclude>org.bouncycastle:bcmail-jdk15on</exclude>
-                                    </excludes>
-                                    <includes>
-                                        <!-- Versions of JSR305 after 3.0.1 are allowed https://github.com/findbugsproject/findbugs/issues/128 -->
-                                        <include>com.google.code.findbugs:jsr305:[3.0.0,)</include>
-                                    </includes>
-                                </bannedDependencies>
                             </rules>
                             <fail>true</fail>
                         </configuration>

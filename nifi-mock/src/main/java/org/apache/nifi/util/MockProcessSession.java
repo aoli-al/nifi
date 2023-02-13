@@ -309,7 +309,7 @@ public class MockProcessSession implements ProcessSession {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(10 * 1000);
+                    Thread.sleep(20 * 1000);
                     commitInternal();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

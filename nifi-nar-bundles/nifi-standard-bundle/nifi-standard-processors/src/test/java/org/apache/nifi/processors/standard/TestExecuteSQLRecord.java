@@ -334,29 +334,7 @@ public class TestExecuteSQLRecord {
         runner.setIncomingConnection(true);
         runner.setProperty(ExecuteSQLRecord.MAX_ROWS_PER_FLOW_FILE, "5");
         runner.enqueue("SELECT ID, CAST(VAL1 AS INTEGER) AS TN FROM TEST_NULL_INT", attrMap);
-        {
-            try {
-                stmt2.execute("drop table TEST_NULL_INT2");
-            } catch (final SQLException sqle) {
-            }
-            stmt2.execute(
-                    "create table TEST_NULL_INT2 (id integer not null, val1 varchar(50), constraint my_pk_2 primary " +
-                            "key" +
-                            " (id))");
-
-            // Insert some valid numeric values (for TO_NUMBER call later)
-            for (int i = 0; i < 11; i++) {
-                stmt2.execute("insert into TEST_NULL_INT2 (id, val1) VALUES (" + i + ", '" + i + "')");
-            }
-            try {
-                stmt2.execute("drop table TEST_NULL_INT2");
-            } catch (final SQLException sqle) {
-            }
-        }
-        runner.enqueue("BAD SQL", attrMap);
-        runner.enqueue("SELECT ID, CAST(VAL1 AS INTEGER) AS TN FROM TEST_NULL_INT2", attrMap);
-        runner.run(3);
-        Thread.sleep(10 * 1000);
+        runner.run();
 
 //        runner.assertAllFlowFilesTransferred(ExecuteSQLRecord.REL_FAILURE, 1);
 //        runner.assertTransferCount(ExecuteSQLRecord.REL_SUCCESS, 0);

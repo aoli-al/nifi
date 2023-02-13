@@ -305,17 +305,7 @@ public class MockProcessSession implements ProcessSession {
 
     @Override
     public void commitAsync() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(20 * 1000);
-                    commitInternal();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        commitInternal();
     }
 
     @Override
